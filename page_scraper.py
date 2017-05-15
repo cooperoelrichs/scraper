@@ -10,6 +10,13 @@ class PageScraper(object):
     MIN_PRICE = 10000
     UNDER_CONTRACT_REGEX = '.*(under contract|under offer)(?i)'
 
+    def no_results_check(soup, page_num):
+        no_results = PageScraper.check_for_no_results(soup)
+        if no_results:
+            print("Found the 'no results' page, final page is number %i" %
+                  (page_num - 1))
+        return no_results
+
     def check_for_no_results(soup):
         ds_contents = PageScraper.get_ds_contents(soup)
         search_results = ds_contents.find(
@@ -181,11 +188,19 @@ class PageScraper(object):
 
         property_type_text = PageScraper.get_property_type_text(
             vcard_name_soup)
-        if property_type_text == 'other':
+        if property_type_text in (
+            'other', 'mixed+farming', 'cropping', 'horticulture'
+        ):
             property_type = rep.Rural()
+        elif property_type_text in ('lifestyle',):
+            property_type = rep.PropertyTypeNotSupported(
+                property_type_text, vcard_name_soup
+            )
         else:
-            raise("Rural property type text was not 'other': %s" %
-                  property_type_text)
+            raise ValueError(
+                "Rural property type text was not 'other', it was: %s" %
+                property_type_text
+            )
 
         features = PageScraper.maybe_extract_property_features(listing_info)
         details = PageScraper.create_property_details(

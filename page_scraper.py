@@ -190,7 +190,7 @@ class PageScraper(object):
             vcard_name_soup)
         if property_type_text in (
             'other', 'mixed+farming', 'cropping', 'horticulture', 'dairy',
-            'livestock'
+            'livestock', 'farmlet'
         ):
             property_type = rep.Rural()
         elif property_type_text in ('lifestyle',):

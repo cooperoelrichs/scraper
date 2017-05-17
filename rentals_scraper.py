@@ -41,8 +41,8 @@ class RentalsScraper(object):
         features = PageScraper.extract_property_features(listing_info)
         details = PageScraper.create_property_details(
             property_type, features)
-        address = PageScraper.find_and_parse_address(article)
-        residential_property = rep.Property(sale_type, details, address)
+        address_text = PageScraper.get_address_text(article)
+        residential_property = rep.Property(sale_type, details, address_text)
         return residential_property
 
     def rental_sale_type(listing_info):

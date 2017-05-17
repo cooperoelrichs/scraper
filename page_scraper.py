@@ -1,9 +1,5 @@
 import re
 import real_estate.real_estate_property as rep
-from real_estate.address_parser import RealEstateAddressParser
-
-
-parser = RealEstateAddressParser()
 
 
 class PageScraper(object):
@@ -117,8 +113,8 @@ class PageScraper(object):
         features = PageScraper.extract_property_features(listing_info)
         details = PageScraper.create_property_details(
             property_type, features)
-        address = PageScraper.find_and_parse_address(article)
-        residential_property = rep.Property(sale_type, details, address)
+        address_text = PageScraper.get_address_text(article)
+        residential_property = rep.Property(sale_type, details, address_text)
         return residential_property
 
     def scrape_residential_land(article):
@@ -129,8 +125,8 @@ class PageScraper(object):
         vcard_name_soup = PageScraper.find_vcard_name_soup(listing_info)
         property_type = PageScraper.extract_property_type(vcard_name_soup)
         details = PageScraper.create_property_details(property_type, features)
-        address = PageScraper.find_and_parse_address(article)
-        residential_land = rep.Property(sale_type, details, address)
+        address_text = PageScraper.get_address_text(article)
+        residential_land = rep.Property(sale_type, details, address_text)
         return residential_land
 
     def scrape_new_apartment_project(article):
@@ -159,10 +155,10 @@ class PageScraper(object):
                 features_soup)
             details = PageScraper.create_property_details(
                 property_type, features)
-            address = PageScraper.find_and_parse_address(child)
+            address_text = PageScraper.get_address_text(child)
 
             child_properties.append(
-                rep.Property(sale_type, details, address)
+                rep.Property(sale_type, details, address_text)
             )
 
         return child_properties
@@ -176,8 +172,8 @@ class PageScraper(object):
         features = PageScraper.extract_property_features(listing_info)
         details = PageScraper.create_property_details(
             property_type, features)
-        address = PageScraper.find_and_parse_address(article)
-        residential_property = rep.Property(sale_type, details, address)
+        address_text = PageScraper.get_address_text(article)
+        residential_property = rep.Property(sale_type, details, address_text)
         return residential_property
 
     def scrape_rural_property(article):
@@ -206,9 +202,9 @@ class PageScraper(object):
         features = PageScraper.maybe_extract_property_features(listing_info)
         details = PageScraper.create_property_details(
             property_type, features)
-        address = PageScraper.find_and_parse_address(article)
+        address_text = PageScraper.get_address_text(article)
 
-        residential_property = rep.Property(sale_type, details, address)
+        residential_property = rep.Property(sale_type, details, address_text)
         return residential_property
 
     def get_listing_info(article):
@@ -445,9 +441,13 @@ class PageScraper(object):
             return False
 
     def find_and_parse_address(article):
-        address_text = PageScraper.find_address_text(article)
-        address = PageScraper.parse_address(address_text)
-        return address
+        # address_text = PageScraper.find_address_text(article)
+        # address = PageScraper.parse_address(address_text)
+        # return address
+        raise RuntimeError('This method has been deprecated.')
+
+    def get_address_text(article):
+        return rep.AddressText(PageScraper.find_address_text(article))
 
     def find_address_text(article):
         photoviewer_search = article.find(
@@ -466,23 +466,3 @@ class PageScraper(object):
             return property_image_search.find('img', recursive=False)['alt']
         else:
             raise RuntimeError('Could not find address text.')
-
-    def parse_address(address_text):
-        address_components = parser.parse_and_validate_address(address_text)
-        if type(address_components) is rep.AddressParseFailed:
-            return address_components
-        else:
-            return PageScraper.create_address(address_components)
-
-    def create_address(address_components):
-        named_components = dict([(b, a) for a, b in address_components])
-        address = rep.Address(
-            house=named_components.get('house'),
-            house_number=named_components.get('house_number'),
-            road=named_components.get('road'),
-            suburb=named_components.get('suburb',
-                                        named_components.get('city')),
-            state=named_components.get('state'),
-            postcode=named_components.get('postcode')
-        )
-        return address

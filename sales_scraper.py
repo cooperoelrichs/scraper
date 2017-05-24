@@ -3,10 +3,9 @@ from scraper.page_scraper import PageScraper
 
 class SalesScraper(object):
     def scrape_pages(pages):
-        num_pages = len(pages)
         scrapings = []
+        print('Scraping from %i pages.' % len(pages))
         for i, soup in enumerate(pages):
-            print('Scraping from page %i of %i.' % (i + 1, num_pages))
             scrapings.extend(SalesScraper.scrape_page(soup))
         return scrapings
 

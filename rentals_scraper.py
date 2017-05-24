@@ -8,10 +8,9 @@ class RentalsScraper(object):
     UNDER_APPLICATION_REGEX = '.*(under application)(?i)'
 
     def scrape_pages(pages):
-        num_pages = len(pages)
         scrapings = []
+        print('Scraping from %i pages.' % len(pages))
         for i, soup in enumerate(pages):
-            print('Scraping from page %i of %i.' % (i + 1, num_pages))
             scrapings.extend(RentalsScraper.scrape_page(soup))
         return scrapings
 

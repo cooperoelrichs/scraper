@@ -77,9 +77,11 @@ class PageScraper(object):
                 '%i v. %i' % (num_articles_on_page, articles_len)
             ))
 
+    # import memory_profiler
+    # @profile
     def create_properties(articles):
         properties = []
-        for i, article in enumerate(articles):
+        for article in articles:
             data_content_type = article['data-content-type']
 
             if data_content_type == 'residential':

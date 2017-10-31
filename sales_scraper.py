@@ -5,9 +5,12 @@ class SalesScraper(object):
 
     import memory_profiler
     # @profile
-    def scrape_pages(pages):
+    def scrape_pages(pages, quiet=False):
         scrapings = []
-        print('Scraping from %i pages.' % len(pages))
+
+        if not quiet:
+            print('Scraping from %i pages.' % len(pages))
+            
         for i, soup in enumerate(pages):
             scrapings.extend(SalesScraper.scrape_page(soup))
         return scrapings

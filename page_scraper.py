@@ -77,8 +77,6 @@ class PageScraper(object):
                 '%i v. %i' % (num_articles_on_page, articles_len)
             ))
 
-    # import memory_profiler
-    # @profile
     def create_properties(articles):
         properties = []
         for article in articles:

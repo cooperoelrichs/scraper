@@ -12,7 +12,7 @@ class RentalsScraper(object):
 
         if not quiet:
             print('Scraping from %i pages.' % len(pages))
-            
+
         for i, soup in enumerate(pages):
             scrapings.extend(RentalsScraper.scrape_page(soup))
         return scrapings

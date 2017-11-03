@@ -1,10 +1,14 @@
 import re
+import bs4
 import real_estate.real_estate_property as rep
 
 
 class PageScraper(object):
     MIN_PRICE = 10000
     UNDER_CONTRACT_REGEX = '.*(under contract|under offer)(?i)'
+
+    def html_to_soup(html):
+        return bs4.BeautifulSoup(html, "html.parser")
 
     def no_results_check(soup, page_num):
         no_results = PageScraper.check_for_no_results(soup)

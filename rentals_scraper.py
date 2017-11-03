@@ -7,13 +7,14 @@ class RentalsScraper(object):
     MIN_PRICE = 50
     UNDER_APPLICATION_REGEX = '.*(under application)(?i)'
 
-    def scrape_pages(pages, quiet=False):
+    def scrape_pages(htmls, quiet=False):
         scrapings = []
 
         if not quiet:
-            print('Scraping from %i pages.' % len(pages))
+            print('Scraping from %i pages.' % len(htmls))
 
-        for i, soup in enumerate(pages):
+        for i, html in enumerate(htmls):
+            soup = PageScraper.html_to_soup(html)
             scrapings.extend(RentalsScraper.scrape_page(soup))
         return scrapings
 

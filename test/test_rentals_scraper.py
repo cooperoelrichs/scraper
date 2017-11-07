@@ -57,8 +57,8 @@ class TestRentalsScraper(unittest.TestCase):
         expected = rep.Property(
             sale_type=rep.Rental([300], False),
             details=rep.Details(rep.Unit(), 1, 1, 1, None, None),
-            address=rep.Address(
-                None, '132 / 2', 'windjana street', 'harrison', 'act', '2914'
+            address_text=rep.AddressText(
+                '132/2  Windjana Street, Harrison, ACT 2914'
             )
         )
 

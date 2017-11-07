@@ -103,9 +103,8 @@ class TestPageScraper(unittest.TestCase):
         child_0 = rep.Property(
             sale_type=rep.PrivateTreaty([349900], False),
             details=rep.Details(rep.TownHouse(), 2, 2, 1, None, None),
-            address=rep.Address(
-                None, '1 / cnr', 'bernard heinze avenue',
-                'moncrieff', 'act', '2914')
+            address_text=rep.AddressText(
+                '1/Cnr Bernard Heinze Avenue, Moncrieff, ACT 2914')
         )
         self.assert_equal_with_summary(children[0], child_0)
 
@@ -117,8 +116,8 @@ class TestPageScraper(unittest.TestCase):
         expected = rep.Property(
             sale_type=rep.Negotiation(True),
             details=rep.Details(rep.House(), 4, 2, 2, None, None),
-            address=rep.Address(
-                None, '51', 'wootton crescent', 'gordon', 'act', '2906')
+            address_text=rep.AddressText(
+                '51 Wootton Crescent, Gordon, ACT 2906')
         )
 
         self.assertIs(type(residential), rep.Property)
@@ -132,8 +131,8 @@ class TestPageScraper(unittest.TestCase):
         expected = rep.Property(
             sale_type=rep.Auction(False),
             details=rep.Details(rep.Land(), None, None, None, None, None),
-            address=rep.Address(
-                None, '25', 'toorale terrace', 'lawson', 'act', '2617')
+            address_text=rep.AddressText(
+                '25 Toorale Terrace, Lawson, ACT 2617')
         )
 
         self.assertIs(type(land), rep.Property)
@@ -147,8 +146,8 @@ class TestPageScraper(unittest.TestCase):
         expected = rep.Property(
             sale_type=rep.OffPlan([799990], False),
             details=rep.Details(rep.House(), 4, 2, 2, None, None),
-            address=rep.Address(
-                None, '4', 'barolits street', 'denman prospect', 'act', '2611')
+            address_text=rep.AddressText(
+                '4 Barolits Street, Denman Prospect, ACT 2611')
         )
 
         self.assertIs(type(prop), rep.Property)
@@ -162,8 +161,8 @@ class TestPageScraper(unittest.TestCase):
         expected = rep.Property(
             sale_type=rep.Negotiation(False),
             details=rep.Details(rep.Rural(), 3, 2, 2, None, None),
-            address=rep.Address(
-                None, '1076', 'spring range road', 'hall', 'act', '2618')
+            address_text=rep.AddressText(
+                '1076 Spring Range Road, Hall, ACT 2618')
         )
 
         self.assertIs(type(prop), rep.Property)
@@ -269,14 +268,3 @@ class TestPageScraper(unittest.TestCase):
             soup = bs4.BeautifulSoup(listing_info, "html.parser")
             parsed = PageScraper.maybe_extract_property_features(soup)
             self.assertEqual(parsed, expected)
-
-    def test_parse_address(self):
-        tests = [
-            ('1 Hill Rd, Hillsberry, NSW 2000',
-             rep.Address(None, '1', 'hill rd', 'hillsberry', 'nsw', '2000')),
-            ('!@#', rep.AddressParseFailed('!@#', [('! #', 'house')]))
-        ]
-
-        for address_text, expected in tests:
-            address = PageScraper.parse_address(address_text)
-            self.assertEqual(address, expected)

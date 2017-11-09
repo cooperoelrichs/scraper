@@ -268,3 +268,15 @@ class TestPageScraper(unittest.TestCase):
             soup = bs4.BeautifulSoup(listing_info, "html.parser")
             parsed = PageScraper.maybe_extract_property_features(soup)
             self.assertEqual(parsed, expected)
+
+    def test_feature_value_to_int(self):
+        self.assertEqual(
+            PageScraper.feature_value_to_int('1', [], ''),
+            1
+        )
+        self.assertEqual(
+            PageScraper.feature_value_to_int('11 m² (approx)', [], ''),
+            11
+        )
+        with self.assertRaises(ValueError):
+            PageScraper.feature_value_to_int('1x', [], '')

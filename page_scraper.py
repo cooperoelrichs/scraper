@@ -7,6 +7,9 @@ class PageScraper(object):
     MIN_PRICE = 10000
     UNDER_CONTRACT_REGEX = '.*(under contract|under offer)(?i)'
 
+    DIGITS_ONLY = re.compile(r'\A(\d+)\Z')
+    APPROX_LAND_AREA = re.compile(r'\A(\d+) m² \(approx\)')
+
     def html_to_soup(html):
         return bs4.BeautifulSoup(html, "html.parser")
 
@@ -281,11 +284,24 @@ class PageScraper(object):
         names = PageScraper.find_and_get_all_text(features_soup, ['dt'])
         names = [x.lower() for x in names]
         values = [
-            int(x) for x in
+            PageScraper.feature_value_to_int(x, names, features_soup) for x in
             PageScraper.find_and_get_all_text(features_soup, ['dd'])
         ]
         features = dict(zip(names, values))
         return features
+
+    def feature_value_to_int(x, names, soup):
+        if PageScraper.DIGITS_ONLY.match(x) is not None:
+            return int(x)
+        elif PageScraper.APPROX_LAND_AREA.match(x) is not None:
+                return int(PageScraper.APPROX_LAND_AREA.match(x).group(1))
+        else:
+            raise ValueError(
+                ('Feature value string not parsable, value: %s' % x) +
+                ('For names:' + ', '.join([str(a) for a in names])) +
+                ('Full feature soup:\n' + str(soup))
+            )
+
 
     def create_property_details(property_type, features):
         property_details = rep.Details(

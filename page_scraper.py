@@ -90,25 +90,30 @@ class PageScraper(object):
             data_content_type = article['data-content-type']
 
             if data_content_type == 'residential':
-                residential = PageScraper.scrape_residential_property(article)
-                properties.append(residential)
+                p = PageScraper.scrape_residential_property(article)
+                properties.append(p)
             elif data_content_type == 'new apartment project':
                 child_properties = PageScraper.scrape_new_apartment_project(
                     article)
-                for child_property in child_properties:
-                    properties.append(child_property)
+                for p in child_properties:
+                    properties.append(p)
             elif data_content_type == 'residential land':
-                land = PageScraper.scrape_residential_land(article)
-                properties.append(land)
+                p = PageScraper.scrape_residential_land(article)
+                properties.append(p)
             elif data_content_type == 'house land package':
-                package = PageScraper.scrape_house_land_package(article)
-                properties.append(package)
+                p = PageScraper.scrape_house_land_package(article)
+                properties.append(p)
             elif data_content_type == 'rural':
-                package = PageScraper.scrape_rural_property(article)
-                properties.append(package)
+                p = PageScraper.scrape_rural_property(article)
+                properties.append(p)
             else:
-                package = rep.DataContentTypeNotSupported(data_content_type)
-                properties.append(package)
+                p = rep.DataContentTypeNotSupported(data_content_type)
+                properties.append(p)
+        return properties
+
+    def populate_state_and_postcode(properties, state, postcode):
+        for p in properties:
+            p.state_and_postcode = rep.StateAndPostcode(state, postcode)
         return properties
 
     def scrape_residential_property(article):

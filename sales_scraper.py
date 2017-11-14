@@ -17,3 +17,8 @@ class SalesScraper(object):
         articles = PageScraper.find_articles(soup)
         properties = PageScraper.create_properties(articles)
         return properties
+
+    def populate_state_and_postcode(properties, state, postcode):
+        return PageScraper.populate_state_and_postcode(
+            properties, state, postcode
+    )    

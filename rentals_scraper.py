@@ -36,6 +36,11 @@ class RentalsScraper(object):
                 properties.append(package)
         return properties
 
+    def populate_state_and_postcode(properties, state, postcode):
+        return PageScraper.populate_state_and_postcode(
+            properties, state, postcode
+    )
+
     def scrape_rental_property(article):
         listing_info = PageScraper.get_listing_info(article)
         sale_type = RentalsScraper.rental_sale_type(listing_info)

@@ -5,6 +5,8 @@ from scraper.rentals_scraper import RentalsScraper
 import real_estate.real_estate_property as rep
 from scraper.test.open_json import open_json_file
 
+from scraper.test.test_page_scraper import populate_state_and_postcode
+
 
 class TestRentalsScraper(unittest.TestCase):
     TEST_HTML_FILE = 'scraper/test/data/test_html.json'
@@ -50,6 +52,9 @@ class TestRentalsScraper(unittest.TestCase):
             self.assert_equal_with_summary(parsed, expected)
 
     def test_rental_property(self):
+        state = 'nsw'
+        pc = 1000
+
         article = open_json_file(self.TEST_HTML_FILE)['rental_property']
         article_soup = bs4.BeautifulSoup(article, "html.parser")
         rental = RentalsScraper.scrape_rental_property(article_soup)
@@ -60,6 +65,10 @@ class TestRentalsScraper(unittest.TestCase):
             address_text=rep.AddressText(
                 '132/2  Windjana Street, Harrison, ACT 2914'
             )
+        )
+
+        rental, expected = populate_state_and_postcode(
+            [rental, expected], 'test_state', 9999
         )
 
         self.assertIs(type(rental), rep.Property)

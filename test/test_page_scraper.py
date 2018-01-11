@@ -18,9 +18,16 @@ def open_html_as_soup(file_path):
     return soup
 
 
+def populate_state_and_postcode(x, state, pc):
+    return PageScraper.populate_state_and_postcode(x, state, pc)
+
+
 class TestPageScraper(unittest.TestCase):
     TEST_DATA_DIR = 'scraper/test/data'
     TEST_HTML_FILE = TEST_DATA_DIR + '/test_html.json'
+
+    STATE = 'test_state'
+    PC = 9999
 
     def test_check_for_no_results(self):
         no_results = open_html_as_soup(
@@ -40,6 +47,13 @@ class TestPageScraper(unittest.TestCase):
     def zip_eq_len(self, x1, x2):
         self.assertEqual(len(x1), len(x2), 'Test lists are not equal length.')
         return zip(x1, x2)
+
+    def general_property_test(self, prop, expected):
+        prop, expected = populate_state_and_postcode(
+            [prop, expected], self.STATE, self.PC
+        )
+        self.assertIs(type(prop), rep.Property)
+        self.assert_equal_with_summary(prop, expected)
 
     def test_extract_price(self):
         tests = [
@@ -96,23 +110,20 @@ class TestPageScraper(unittest.TestCase):
         article = open_json_file(self.TEST_HTML_FILE)['new_apartment_project']
         article_soup = bs4.BeautifulSoup(article, "html.parser")
         children = PageScraper.scrape_new_apartment_project(article_soup)
-
-        self.assertEqual(len(children), 4)
         self.assertIs(type(children[0]), rep.Property)
 
-        child_0 = rep.Property(
+        expected = rep.Property(
             sale_type=rep.PrivateTreaty([349900], False),
             details=rep.Details(rep.TownHouse(), 2, 2, 1, None, None),
             address_text=rep.AddressText(
                 '1/Cnr Bernard Heinze Avenue, Moncrieff, ACT 2914')
         )
-        self.assert_equal_with_summary(children[0], child_0)
+        self.general_property_test(children[0], expected)
 
     def test_residential_property(self):
         article = open_json_file(self.TEST_HTML_FILE)['residential_property']
         article_soup = bs4.BeautifulSoup(article, "html.parser")
         residential = PageScraper.scrape_residential_property(article_soup)
-
         expected = rep.Property(
             sale_type=rep.Negotiation(True),
             details=rep.Details(rep.House(), 4, 2, 2, None, None),
@@ -120,8 +131,7 @@ class TestPageScraper(unittest.TestCase):
                 '51 Wootton Crescent, Gordon, ACT 2906')
         )
 
-        self.assertIs(type(residential), rep.Property)
-        self.assert_equal_with_summary(residential, expected)
+        self.general_property_test(residential, expected)
 
     def test_residential_land(self):
         article = open_json_file(self.TEST_HTML_FILE)['residential_land']
@@ -134,9 +144,7 @@ class TestPageScraper(unittest.TestCase):
             address_text=rep.AddressText(
                 '25 Toorale Terrace, Lawson, ACT 2617')
         )
-
-        self.assertIs(type(land), rep.Property)
-        self.assert_equal_with_summary(land, expected)
+        self.general_property_test(land, expected)
 
     def test_house_land_package(self):
         article = open_json_file(self.TEST_HTML_FILE)['house_land_package']
@@ -149,9 +157,7 @@ class TestPageScraper(unittest.TestCase):
             address_text=rep.AddressText(
                 '4 Barolits Street, Denman Prospect, ACT 2611')
         )
-
-        self.assertIs(type(prop), rep.Property)
-        self.assert_equal_with_summary(prop, expected)
+        self.general_property_test(prop, expected)
 
     def test_rural_property(self):
         article = open_json_file(self.TEST_HTML_FILE)['rural_property']
@@ -164,9 +170,7 @@ class TestPageScraper(unittest.TestCase):
             address_text=rep.AddressText(
                 '1076 Spring Range Road, Hall, ACT 2618')
         )
-
-        self.assertIs(type(prop), rep.Property)
-        self.assert_equal_with_summary(prop, expected)
+        self.general_property_test(prop, expected)
 
     def test_deduce_sale_type(self):
         tests = [
